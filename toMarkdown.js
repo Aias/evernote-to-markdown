@@ -7,8 +7,8 @@ const converter = new TurndownService({
 	headingStyle: 'atx',
 	bulletListMarker: '-',
 	codeBlockStyle: 'fenced',
-	strongDelimiter: '__',
 	emDelimiter: '*',
+	strongDelimiter: '__',
 	linkStyle: 'referenced',
 });
 
@@ -37,13 +37,8 @@ function toMarkDown(htmlString) {
 
 	const body = document.querySelector('body');
 	const bodyMarkdown = converter.turndown(body);
-	const metaMarkdown = `---
 
----`;
-
-	return `${metaMarkdown}
-
-${bodyMarkdown}`;
+	return bodyMarkdown;
 }
 
 module.exports = toMarkDown;

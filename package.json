@@ -10,7 +10,9 @@
 		"go": "node index.js"
 	},
 	"dependencies": {
+		"glob": "^7.1.6",
 		"jsdom": "^15.2.1",
+		"mkdirp": "^0.5.1",
 		"turndown": "^5.0.3"
 	}
 }
