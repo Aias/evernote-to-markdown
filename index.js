@@ -29,7 +29,7 @@ function processNote(filePath) {
 
 			writeFile(outputFile, markdown, err => {
 				if (err) throw err;
-				console.log(`Saved ${filePath} to output.`);
+				console.log(`Saved ${outputFile} to output.`);
 			});
 		} else {
 			throw err;
