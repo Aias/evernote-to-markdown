@@ -1,0 +1,12 @@
+{
+  "name": "evernote-to-markdown",
+  "version": "1.0.0",
+  "description": "Converts HTML notes exported via Evernote to plain markdown files, to do with what you will.",
+  "main": "index.js",
+  "repository": "https://github.com/Aias/evernote-to-markdown.git",
+  "author": "Nick Trombley <trombley.nick@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "turndown": "^5.0.3"
+  }
+}
