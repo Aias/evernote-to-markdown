@@ -1,16 +1,4 @@
-const TurndownService = require('turndown');
-const jsdom = require('jsdom');
-
-const { JSDOM } = jsdom;
-
-const converter = new TurndownService({
-	headingStyle: 'atx',
-	bulletListMarker: '-',
-	codeBlockStyle: 'fenced',
-	strongDelimiter: '__',
-	emDelimiter: '*',
-	linkStyle: 'referenced',
-});
+const toMarkdown = require('./toMarkdown');
 
 const testHtml = `
 <?xml version="1.0" encoding="UTF-8"?>
@@ -20,21 +8,3 @@ const testHtml = `
 const markdown = toMarkdown(testHtml);
 
 console.log(markdown);
-
-function toMarkdown(htmlString) {
-	const dom = new JSDOM(htmlString);
-	const document = dom.window.document;
-
-	const spans = document.querySelectorAll('span');
-	spans.forEach(replaceSpan);
-
-	const html = document.querySelector('html');
-
-	return converter.turndown(html);
-}
-
-function replaceSpan(span) {
-	const fontStyle = span.style.fontStyle;
-	const fontWeight = span.style.fontWeight;
-	console.log(fontStyle, fontWeight);
-}
