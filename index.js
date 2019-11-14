@@ -3,7 +3,7 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const glob = require('glob');
 
-const getBaseName = filePath => path.parse(filePath).name;
+const getFileName = filePath => path.parse(filePath).name;
 const getExtension = path.extname;
 const getDirName = path.dirname;
 const getRelDir = path.relative;
@@ -20,17 +20,22 @@ glob(`${inputDir}/**/*.html`, (err, files) => {
 function processNote(filePath) {
 	fs.readFile(filePath, { encoding: 'utf-8' }, function(err, data) {
 		if (!err) {
-			const testHtml = data.toString();
-			const markdown = toMarkdown(testHtml);
+			try {
+				const htmlString = data.toString();
+				const markdown = toMarkdown(htmlString, filePath);
 
-			const relDir = getDirName(getRelDir(inputDir, filePath));
-			const fileName = getBaseName(filePath);
-			const outputFile = `${outputDir}/${relDir}/${fileName}.md`;
+				const relDir = getDirName(getRelDir(inputDir, filePath));
+				const fileName = getFileName(filePath);
+				const outputFile = `${outputDir}/${relDir}/${fileName}.md`;
 
-			writeFile(outputFile, markdown, err => {
-				if (err) throw err;
-				console.log(`Saved ${outputFile} to output.`);
-			});
+				writeFile(outputFile, markdown, err => {
+					if (err) throw err;
+					console.log(`Saved ${outputFile} to output.`);
+				});
+			} catch (e) {
+				console.log('Could not parse file: ', filePath);
+				console.log(e);
+			}
 		} else {
 			throw err;
 		}

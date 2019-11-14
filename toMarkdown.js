@@ -10,6 +10,14 @@ const converter = new TurndownService({
 	emDelimiter: '*',
 	strongDelimiter: '__',
 	linkStyle: 'referenced',
+	blankReplacement: function(content) {
+		return '';
+	},
+}).addRule('divs', {
+	filter: 'div',
+	replacement: function(content, node, options) {
+		return content + (node.nextElementSibling ? '\r\n' : '');
+	},
 });
 
 function toMarkDown(htmlString) {
@@ -38,7 +46,16 @@ function toMarkDown(htmlString) {
 	const body = document.querySelector('body');
 	const bodyMarkdown = converter.turndown(body);
 
-	return bodyMarkdown;
+	return trimWhiteSpace(bodyMarkdown);
+}
+
+function trimWhiteSpace(markdownString) {
+	const completelyBlankLine = /^[\r\n]/gm;
+	const justWhiteSpace = /^\s*[\r\n]/gm;
+
+	return markdownString
+		.replace(completelyBlankLine, '')
+		.replace(justWhiteSpace, '\r\n');
 }
 
 module.exports = toMarkDown;
