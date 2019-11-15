@@ -13,12 +13,25 @@ const converter = new TurndownService({
 	blankReplacement: function(content) {
 		return '';
 	},
-}).addRule('divs', {
-	filter: 'div',
-	replacement: function(content, node, options) {
-		return content + (node.nextElementSibling ? '\r\n' : '');
-	},
-});
+})
+	.addRule('divs', {
+		filter: 'div',
+		replacement: function(content, node, options) {
+			return content + (node.nextElementSibling ? '\r\n' : '');
+		},
+	})
+	.addRule('headings', {
+		filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+		replacement: function(content, node, options) {
+			const headerLevel = Number(node.nodeName.substr(1));
+			let hashes = '';
+			for (let i = 1; i <= headerLevel; i++) {
+				hashes += '#';
+			}
+
+			return `${hashes} ${content}\r\n  \r\n`;
+		},
+	});
 
 function toMarkDown(htmlString) {
 	const dom = new JSDOM(htmlString);
