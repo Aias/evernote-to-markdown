@@ -33,7 +33,7 @@ const converter = new TurndownService({
 		},
 	});
 
-function toMarkDown(htmlString) {
+function toMarkDown(htmlString = '', includeMeta = true) {
 	const dom = new JSDOM(htmlString);
 	const document = dom.window.document;
 
@@ -55,6 +55,17 @@ function toMarkDown(htmlString) {
 			span.innerHTML = strong.outerHTML;
 		}
 	}
+
+	let meta = {
+		title: document.querySelector('title')
+			? document.querySelector('title').innerHTML
+			: 'Untitled',
+	};
+	document.querySelectorAll('meta[name]').forEach(el => {
+		meta[el.getAttribute('name')] = el.getAttribute('content');
+	});
+
+	// console.log(meta);
 
 	const body = document.querySelector('body');
 	const bodyMarkdown = converter.turndown(body);
