@@ -2,6 +2,7 @@ const TurndownService = require('turndown');
 const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
+const NEWLINE = '\r\n';
 
 const converter = new TurndownService({
 	headingStyle: 'atx',
@@ -17,7 +18,7 @@ const converter = new TurndownService({
 	.addRule('divs', {
 		filter: 'div',
 		replacement: function(content, node, options) {
-			return content + (node.nextElementSibling ? '\r\n' : '');
+			return content + (node.nextElementSibling ? NEWLINE : '');
 		},
 	})
 	.addRule('headings', {
@@ -29,7 +30,7 @@ const converter = new TurndownService({
 				hashes += '#';
 			}
 
-			return `${hashes} ${content}\r\n  \r\n`;
+			return `${hashes} ${content}${NEWLINE}  ${NEWLINE}`;
 		},
 	});
 
@@ -65,21 +66,55 @@ function toMarkDown(htmlString = '', includeMeta = true) {
 		meta[el.getAttribute('name')] = el.getAttribute('content');
 	});
 
-	// console.log(meta);
-
 	const body = document.querySelector('body');
-	const bodyMarkdown = converter.turndown(body);
+	let markdown = trimWhiteSpace(converter.turndown(body));
 
-	return trimWhiteSpace(bodyMarkdown);
+	if (includeMeta) {
+		markdown =
+			`---${NEWLINE}` +
+			(meta.title ? `title: ${meta.title + NEWLINE}` : '') +
+			(meta.created ? `date: ${meta.created + NEWLINE}` : '') +
+			(meta.updated ? `updated: ${meta.updated + NEWLINE}` : '') +
+			(meta.author && meta.author !== 'Nick Trombley'
+				? `author: ${meta.author + NEWLINE}`
+				: '') +
+			(meta['source-url']
+				? `source: ${meta['source-url'] + NEWLINE}`
+				: '') +
+			(meta.altitude ? `altitude: ${meta.altitude + NEWLINE}` : '') +
+			(meta.latitude ? `latitude: ${meta.latitude + NEWLINE}` : '') +
+			(meta.longitude ? `longitude: ${meta.longitude + NEWLINE}` : '') +
+			(meta.keywords ? `tags:${NEWLINE + makeTags(meta.keywords)}` : '') +
+			`---${NEWLINE}` +
+			markdown;
+	}
+
+	return markdown;
 }
 
-function trimWhiteSpace(markdownString) {
+function trimWhiteSpace(markdownString = '') {
 	const completelyBlankLine = /^[\r\n]/gm;
 	const justWhiteSpace = /^\s*[\r\n]/gm;
 
 	return markdownString
 		.replace(completelyBlankLine, '')
-		.replace(justWhiteSpace, '\r\n');
+		.replace(justWhiteSpace, NEWLINE);
+}
+
+function makeTags(tagString = '') {
+	/*
+		The "tag #<tag>" format is admittedly kind of ugly.
+		I would prefer not to duplicate them.
+		But I also plan on using these in iA Writer,
+		which has special handling for the # character,
+		so I need to include both the unhashed word,
+		for YAML compatibility, and the hashed word,
+		for my writing tool of choice.
+	*/
+	return tagString
+		.split(',')
+		.map(tag => `  - ${tag.trim()} #${tag.trim()}${NEWLINE}`)
+		.join('');
 }
 
 module.exports = toMarkDown;

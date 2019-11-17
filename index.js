@@ -33,7 +33,7 @@ function processNote(filePath) {
 					console.log(`Saved ${outputFile} to output.`);
 				});
 			} catch (e) {
-				console.log('Could not parse file: ', filePath);
+				console.error('Could not parse file: ', filePath);
 				console.log(e);
 			}
 		} else {
