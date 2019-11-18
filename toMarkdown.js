@@ -68,11 +68,16 @@ function toMarkDown(htmlString = '', includeMeta = true) {
 
 	const body = document.querySelector('body');
 	let markdown = trimWhiteSpace(converter.turndown(body));
+	// TODO: Figure out a way to add an extra newline
+	// between the main markdown content and the start of the reference-style links.
+	// Without it, I've seen bugs with certain markdown renderers (like github),
+	// that don't display the links properly.
 
 	if (includeMeta) {
 		markdown =
 			`---${NEWLINE}` +
 			(meta.title ? `title: ${meta.title + NEWLINE}` : '') +
+			// TODO: Remove +0000 from end of these dates.
 			(meta.created ? `date: ${meta.created + NEWLINE}` : '') +
 			(meta.updated ? `updated: ${meta.updated + NEWLINE}` : '') +
 			(meta.author && meta.author !== 'Nick Trombley'
