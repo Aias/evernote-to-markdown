@@ -3,12 +3,13 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const glob = require('glob');
 
+const toMarkdown = require('./toMarkdown');
+const slugify = require('./slugify');
+
 const getFileName = filePath => path.parse(filePath).name;
 const getExtension = path.extname;
 const getDirName = path.dirname;
 const getRelDir = path.relative;
-
-const toMarkdown = require('./toMarkdown');
 
 const inputDir = path.join(__dirname, '/input');
 const outputDir = path.join(__dirname, '/output');
@@ -24,13 +25,16 @@ function processNote(filePath) {
 				const htmlString = data.toString();
 				const markdown = toMarkdown(htmlString, filePath);
 
-				const relDir = getDirName(getRelDir(inputDir, filePath));
-				const fileName = getFileName(filePath);
-				const outputFile = `${outputDir}/${relDir}/${fileName}.md`;
+				const outputRelDir = slugify(
+					getDirName(getRelDir(inputDir, filePath))
+				);
+				const inputFileName = getFileName(filePath);
+				const outputFileName = slugify(inputFileName);
+				const outputFilePath = `${outputDir}/${outputRelDir}/${outputFileName}.md`;
 
-				writeFile(outputFile, markdown, err => {
+				writeFile(outputFilePath, markdown, err => {
 					if (err) throw err;
-					console.log(`Saved ${outputFile} to output.`);
+					console.log(`Saved ${outputFilePath} to output.`);
 				});
 			} catch (e) {
 				console.error('Could not parse file: ', filePath);
