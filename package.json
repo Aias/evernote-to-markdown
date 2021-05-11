@@ -10,10 +10,10 @@
 		"go": "node index.js"
 	},
 	"dependencies": {
-		"glob": "^7.1.6",
-		"jsdom": "^15.2.1",
-		"mkdirp": "^0.5.1",
-		"slugify": "^1.3.6",
-		"turndown": "^5.0.3"
+		"glob": "^7.1.7",
+		"jsdom": "^16.5.3",
+		"mkdirp": "^1.0.4",
+		"slugify": "^1.5.2",
+		"turndown": "^7.0.0"
 	}
 }

@@ -6,7 +6,7 @@ const glob = require('glob');
 const toMarkdown = require('./toMarkdown');
 const slugify = require('./slugify');
 
-const getFileName = filePath => path.parse(filePath).name;
+const getFileName = (filePath) => path.parse(filePath).name;
 const getExtension = path.extname;
 const getDirName = path.dirname;
 const getRelDir = path.relative;
@@ -19,20 +19,18 @@ glob(`${inputDir}/**/*.html`, (err, files) => {
 });
 
 function processNote(filePath) {
-	fs.readFile(filePath, { encoding: 'utf-8' }, function(err, data) {
+	fs.readFile(filePath, { encoding: 'utf-8' }, function (err, data) {
 		if (!err) {
 			try {
 				const htmlString = data.toString();
 				const markdown = toMarkdown(htmlString, filePath);
 
-				const outputRelDir = slugify(
-					getDirName(getRelDir(inputDir, filePath))
-				);
+				const outputRelDir = slugify(getDirName(getRelDir(inputDir, filePath)));
 				const inputFileName = getFileName(filePath);
 				const outputFileName = slugify(inputFileName);
 				const outputFilePath = `${outputDir}/${outputRelDir}/${outputFileName}.md`;
 
-				writeFile(outputFilePath, markdown, err => {
+				writeFile(outputFilePath, markdown, (err) => {
 					if (err) throw err;
 					console.log(`Saved ${outputFilePath} to output.`);
 				});
@@ -47,9 +45,9 @@ function processNote(filePath) {
 }
 
 function writeFile(path, contents, cb) {
-	mkdirp(getDirName(path), function(err) {
-		if (err) return cb(err);
-
-		fs.writeFile(path, contents, cb);
-	});
+	mkdirp(getDirName(path))
+		.then((made) => fs.writeFile(path, contents, cb))
+		.catch((error) => {
+			return cb(error);
+		});
 }
